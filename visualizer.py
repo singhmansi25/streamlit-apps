@@ -59,7 +59,7 @@ def app():
         st.session_state.page_refreshed = True
 
     # List all files in the folder
-    files = [f for f in os.listdir(folder_path) if f.endswith('.csv') or f.endswith('.xlsx')]
+    files = [f for f in os.listdir(folder_path) if f.endswith(('.csv', '.xlsx', '.json', '.xml'))]
 
     # Dropdown to select a file
     selected_file = st.selectbox('Select a file', files, index=None)
@@ -68,8 +68,16 @@ def app():
         # Construct the full path to the file
         file_path = os.path.join(folder_path, selected_file)
 
-        # Read the selected CSV file
-        df = pd.read_csv(file_path)
+        # Read the selected file
+        if selected_file.endswith('.csv'):
+            df = pd.read_csv(file_path)
+        elif selected_file.endswith('.xlsx'):
+            df = pd.read_excel(file_path)
+        elif selected_file.endswith('.json'):
+            df = pd.read_json(file_path)
+        elif selected_file.endswith('.xml'):
+            df = pd.read_xml(file_path)
+        
         return StreamlitRenderer(df, spec="./gw_config.json", spec_io_mode="rw")
 
 renderer = app()
